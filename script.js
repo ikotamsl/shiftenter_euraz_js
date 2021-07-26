@@ -28,53 +28,49 @@ var options = {
     },
   },
   xaxis: {
-    type: 'datetime',
+    type: 'categories',
     categories: [],
     labels: {
-      date: 'dd/MM/yyyy HH:mm'
+      formatter: function(val) {
+        return dayjs(val).format('DD.MM.YYYY HH:mm');
+      }
     }
   },
   legend: {
-    position: 'right',
-    offsetY: 40
+    position: 'bottom'
   },
   fill: {
     opacity: 1
   }
-  };
+};
 
 var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+function transformToFloat(str_num) {
+  return str_num.replace(',', '.');
+}
 
 function fillDataToArr(node) {
   for (let i = 0; i < node.length; i++){
     innerData = node[i].querySelectorAll('td');
-
-    options.series[0].data.push(innerData[1].innerHTML);
-    options.series[1].data.push(innerData[2].innerHTML);
-    options.series[2].data.push(innerData[3].innerHTML);
-    options.series[3].data.push(innerData[4].innerHTML);
-  }
-}
-
-function fillDatetime(node) {
-  for (let i = 0; i < node.length; i++){
-    innerData = node[i].querySelectorAll('td');
-    console.log(innerData);
     options.xaxis.categories.push(new Date(innerData[0].innerHTML).getTime());
 
+
+    options.series[0].data.push(transformToFloat(innerData[1].innerHTML));
+    options.series[1].data.push(transformToFloat(innerData[2].innerHTML));
+    options.series[2].data.push(transformToFloat(innerData[3].innerHTML));
+    options.series[3].data.push(transformToFloat(innerData[4].innerHTML));
   }
 }
 
 function fillDataToChart() {
-  const dataRows = document.querySelectorAll('.data'),
-        headRow = document.querySelectorAll('.head');
+  const dataRows = document.querySelectorAll('.data');
 
   options.series.push({name: 'Агломерат ЗСМК крупный', data: []});
   options.series.push({name: 'Агломерат ЗСМК мелкий', data: []});
   options.series.push({name: 'Агломерат складской', data: []});
   options.series.push({name: 'Окатыши карельские НО', data: []});
 
-  fillDatetime(dataRows);
   fillDataToArr(dataRows);
 }
 
